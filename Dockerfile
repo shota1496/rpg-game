@@ -29,7 +29,11 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # ストレージ等のパーミッション設定
-RUN chmod -R 775 storage bootstrap/cache
+#RUN chmod -R 775 storage bootstrap/cache
+# ストレージおよびキャッシュディレクトリの作成とパーミッション設定
+RUN mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions \
+    && chmod -R 775 storage bootstrap/cache
+
 
 # Nginxの設定ファイルをコピー（後述）
 COPY docker/nginx.conf /etc/nginx/sites-available/default
