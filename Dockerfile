@@ -42,4 +42,3 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 10000
 ENTRYPOINT ["/entrypoint.sh"]
-#
