@@ -83,6 +83,7 @@ return [
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+        /*
 
         'pgsql' => [
             'driver' => 'pgsql',
@@ -98,6 +99,17 @@ return [
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
+        */
+
+        'pgsql' => [
+    'driver' => 'pgsql',
+    'url' => env('DATABASE_URL'),
+    'charset' => 'utf8',
+    'prefix' => '',
+    'prefix_indexes' => true,
+    'search_path' => 'public',
+    'sslmode' => 'prefer',
+],
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
