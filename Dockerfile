@@ -1,6 +1,6 @@
 FROM php:8.4-fpm
 
-# 必要なパッケージとPHP拡張機能のインストール
+# 必要なパッケージのインストール (Node.jsも含める)
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -11,36 +11,34 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     nginx \
-    supervisor
+    supervisor \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
-# PHP拡張機能の有効化（PostgreSQL/MySQL両対応）
+# PHP拡張機能のインストール
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
 
-# Composerのインストール
+# Composerのコピー
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 作業ディレクトリの設定
 WORKDIR /var/www/html
 
-# プロジェクトファイルをコンテナにコピー
+# プロジェクトファイルのコピー
 COPY . .
 
-# Composerで本番用ライブラリのインストール
+# 依存関係のインストール (Composer & npm)
 RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN npm install && npm run build
 
-# 必要なストレージディレクトリを確実に作成してパーミッションを設定
+# ストレージの権限・所有者設定
 RUN mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
 
-
-
-# Nginxの設定ファイルをコピー（後述）
+# Nginx設定とエントリーポイントのコピー
 COPY docker/nginx.conf /etc/nginx/sites-available/default
-
-# 起動用スクリプトのコピーと実行権限付与
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 10000
-
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
