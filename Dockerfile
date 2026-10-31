@@ -31,9 +31,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN npm install && npm run build
 
 # ストレージの権限・所有者設定
-RUN mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs \
-    && chmod -R 775 storage bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+RUN mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs && chmod -R 775 storage bootstrap/cache && chown -R www-data:www-data storage bootstrap/cache
 
 # Nginx設定とエントリーポイントのコピー
 COPY docker/nginx.conf /etc/nginx/sites-available/default
