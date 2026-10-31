@@ -28,10 +28,10 @@ COPY . .
 # Composerで本番用ライブラリのインストール
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# ストレージ等のパーミッション設定
-#RUN chmod -R 775 storage bootstrap/cache
-# ストレージおよびキャッシュディレクトリの作成とパーミッション設定
-RUN mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions && chmod -R 775 storage bootstrap/cache
+# 必要なストレージディレクトリを確実に作成してパーミッションを設定
+RUN mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions storage/logs \
+    && chmod -R 775 storage bootstrap/cache
+
 
 
 # Nginxの設定ファイルをコピー（後述）
